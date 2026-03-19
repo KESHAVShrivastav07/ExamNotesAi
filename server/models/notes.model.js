@@ -1,32 +1,50 @@
 import mongoose from "mongoose";
 const notesSchema = new mongoose.Schema({
-     user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "UserModel",
-      required: true
-    },
-
-    topic: {
+    title: {
       type: String,
-      required: true
+      default: "Untitled Note"
     },
-
-    classLevel: String,
-    examType: String,
-
-    revisionMode: {
-      type: Boolean,
-      default: false
+    description: String,
+    fileUrl: {
+      type: String,
+      required: false
     },
-
-    includeDiagram: Boolean,
-    includeChart: Boolean,
-
-    content: {
-      type: mongoose.Schema.Types.Mixed, // AI response (string / JSON)
-      required: true
-    }
-
+    subject: {
+      type: String,
+      required: false
+    },
+    section: {
+      type: String,
+      required: false
+    },
+    uploadedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: 'onModel',
+      required: false
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'UserModel',
+      required: false
+    },
+    onModel: {
+      type: String,
+      required: false,
+      enum: ['UserModel', 'Teacher', 'Admin'],
+      default: 'UserModel'
+    },
+    // AI Generated Fields
+    summary: String,
+    keyPoints: [String],
+    questions: [
+      {
+        question: String,
+        answer: String
+      }
+    ],
+    // Original fields for backward compatibility or generic notes
+    topic: String,
+    content: mongoose.Schema.Types.Mixed
 },{timestamps:true})
 
 const Notes = mongoose.model("Notes" , notesSchema)

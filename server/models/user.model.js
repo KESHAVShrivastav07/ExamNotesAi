@@ -12,12 +12,16 @@ const userSchema = new mongoose.Schema({
     },
     credits:{
         type:Number,
-        default:50,
+        default:100,
         min:0
     },
     isCreditAvailable:{
         type:Boolean,
         default:true
+    },
+    role: {
+      type: String,
+      default: "user"
     },
     notes:{
         type:[mongoose.Schema.Types.ObjectId],

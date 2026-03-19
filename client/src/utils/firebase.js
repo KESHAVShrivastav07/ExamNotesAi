@@ -17,5 +17,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app)
 
 const provider = new GoogleAuthProvider()
+// Force Google to show the account chooser so users can select which email to use
+provider.setCustomParameters({ prompt: 'select_account' })
 
 export {auth , provider}

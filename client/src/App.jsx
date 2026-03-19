@@ -1,38 +1,169 @@
 import React, { useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
-import Auth from './pages/Auth'
+import UserLogin from './pages/UserLogin'
+import AdminDashboard from './pages/AdminDashboard'
+import AdminLogin from './pages/AdminLogin'
+import TeacherLogin from './pages/TeacherLogin'
+import TeacherDashboard from './pages/TeacherDashboard'
 import { getCurrentUser } from './services/api'
 import { useDispatch, useSelector } from 'react-redux'
+import ProtectedRoute from './components/ProtectedRoute'
 import History from './pages/History'
 import Notes from './pages/Notes'
 import Pricing from './pages/Pricing'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentFailed from './pages/PaymentFailed'
-export const serverUrl = "https://examnotesaiserver-tybq.onrender.com"
+import TestList from './pages/TestList'
+import TestAttempt from './pages/TestAttempt'
+import TestPerformance from './pages/TestPerformance'
+import Playground from './pages/Playground'
 
-function App() {
+export const serverUrl = "http://localhost:8001"
+
+function App () {
   const dispatch = useDispatch()
-  useEffect(()=>{
-   getCurrentUser(dispatch)
-  },[dispatch])
+  const { userData, isLoading } = useSelector((state) => state.user)
 
-  const {userData} = useSelector((state)=>state.user)
+  console.log("[App] Rendering. isLoading:", isLoading, "userData:", !!userData);
+
+  useEffect(() => {
+    getCurrentUser(dispatch)
+  }, [dispatch])
+
+  // Task 1: Prevent flicker by not rendering routes until auth check is done
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="w-8 h-8 border-4 border-gray-900 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
   return (
-    <>
     <Routes>
-      <Route path='/' element={userData? <Home/> : <Navigate to="/auth" replace/>}/>
-      <Route path='/auth' element={userData ? <Navigate to="/" replace/> : <Auth/>}/>
-      <Route path='/history' element={userData? <History/> : <Navigate to="/auth" replace/>}/>
-      <Route path='/notes' element={userData? <Notes/> : <Navigate to="/auth" replace/>}/>
-      <Route path='/pricing' element={userData? <Pricing/> : <Navigate to="/auth" replace/>}/>
+      {/* Public Routes with Redirects */}
+      <Route 
+        path='/auth' 
+        element={userData ? <Navigate to="/" replace /> : <UserLogin />} 
+      />
+      <Route
+        path='/admin/login'
+        element={userData?.role === "admin" ? <Navigate to="/admin/dashboard" replace /> : <AdminLogin />}
+      />
+      <Route
+        path='/teacher/login'
+        element={userData?.role === "teacher" ? <Navigate to="/teacher/dashboard" replace /> : <TeacherLogin />}
+      />
 
-      <Route path='/payment-success' element={<PaymentSuccess/>}/>
-      <Route path='/payment-failed' element={<PaymentFailed/>}/>
+      {/* Protected Routes */}
+      <Route 
+        path='/' 
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route
+        path='/admin/dashboard'
+        element={
+          <ProtectedRoute allowedRole="admin" redirectTo="/admin/login">
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path='/teacher/dashboard'
+        element={
+          <ProtectedRoute allowedRole="teacher" redirectTo="/teacher/login">
+            <TeacherDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route 
+        path='/history' 
+        element={
+          <ProtectedRoute>
+            <History />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path='/notes' 
+        element={
+          <ProtectedRoute>
+            <Notes />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path='/notes/:section' 
+        element={
+          <ProtectedRoute>
+            <Notes />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path='/pricing' 
+        element={
+          <ProtectedRoute>
+            <Pricing />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path='/tests' 
+        element={
+          <ProtectedRoute>
+            <TestList />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path='/test/:id' 
+        element={
+          <ProtectedRoute>
+            <TestAttempt />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path='/performance' 
+        element={
+          <ProtectedRoute>
+            <TestPerformance />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path='/playground' 
+        element={
+          <ProtectedRoute>
+            <Playground />
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* Global Results/Status (always accessible or protected as needed) */}
+      <Route path='/payment-success' element={<PaymentSuccess />} />
+      <Route path='/payment-failed' element={<PaymentFailed />} />
+      
+      {/* Catch all */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-     
-    </>
   )
 }
 
 export default App
+

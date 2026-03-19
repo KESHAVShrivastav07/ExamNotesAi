@@ -104,24 +104,29 @@ STRICT JSON FORMAT (DO NOT CHANGE):
 
 {
   "subTopics": {
-    "⭐": [],
-    "⭐⭐": [],
-    "⭐⭐⭐": []
+    "⭐": ["Minimum 3 items here"],
+    "⭐⭐": ["Minimum 3 items here"],
+    "⭐⭐⭐": ["Minimum 3 items here"]
   },
   "importance": "⭐ | ⭐⭐ | ⭐⭐⭐",
-  "notes": "string",
-  "revisionPoints": [],
+  "notes": "Detailed markdown notes string",
+  "revisionPoints": ["At least 5 bullet points"],
   "questions": {
-    "short": [],
-    "long": [],
-    "diagram": ""
+    "short": ["3-5 short questions"],
+    "long": ["2-3 long questions"],
+    "diagram": "One diagram-based question"
   },
   "diagram": {
     "type": "flowchart | graph | process",
-    "data": ""
+    "data": "graph TD\nA[Node] --> B[Node]"
   },
   "charts": []
 }
+
+⚠️ FINAL REMINDERS:
+- subTopics arrays MUST NOT BE EMPTY. Generate at least 3 relevant topics for each priority level.
+- diagram.data MUST NOT contain any double quotes \" inside the Mermaid code. Use simple labels like A[Topic Name].
+- RETURN ONLY VALID JSON.
 
 RETURN ONLY VALID JSON.
 `;
